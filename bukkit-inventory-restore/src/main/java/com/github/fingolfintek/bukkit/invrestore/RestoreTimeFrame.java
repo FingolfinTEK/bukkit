@@ -1,13 +1,13 @@
-package com.github.fingolfintek.bukkit;
+package com.github.fingolfintek.bukkit.invrestore;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class InventoryRestoreTimeFrame {
+public class RestoreTimeFrame {
 
-    private static final Pattern TIME_PATTERN = Pattern.compile("-t(%d+)(d|h|m)");
+    private static final Pattern TIME_PATTERN = Pattern.compile("-t(\\d+)(d|h|m)");
 
     private static final int TIME_QUANTITY_GROUP = 1;
     private static final int TIME_UNIT_GROUP = 2;
@@ -15,12 +15,10 @@ public class InventoryRestoreTimeFrame {
     private final Date lowerBound;
     private final Date upperBound;
 
-    public InventoryRestoreTimeFrame(String timeFrame) {
+    public RestoreTimeFrame(String timeFrame) {
         Calendar calendar = getRequestedTimeFrameLowerBound(timeFrame);
         lowerBound = calendar.getTime();
-
-        calendar.add(Calendar.MINUTE, 5);
-        upperBound = calendar.getTime();
+        upperBound = new Date();
     }
 
 
@@ -29,10 +27,9 @@ public class InventoryRestoreTimeFrame {
 
         Matcher matcher = TIME_PATTERN.matcher(timeFrame);
         if (matcher.matches()) {
-            Integer timeQuantity = Integer.parseInt(matcher.group(InventoryRestoreTimeFrame.TIME_QUANTITY_GROUP));
-            String timeUnit = matcher.group(InventoryRestoreTimeFrame.TIME_UNIT_GROUP);
-
-            calendar.add(InventoryRestoreTimeFrame.TimeUnit.getCalendarField(timeUnit), -timeQuantity);
+            Integer timeQuantity = Integer.parseInt(matcher.group(RestoreTimeFrame.TIME_QUANTITY_GROUP));
+            String timeUnit = matcher.group(RestoreTimeFrame.TIME_UNIT_GROUP);
+            calendar.add(RestoreTimeFrame.TimeUnit.getCalendarField(timeUnit), -timeQuantity);
         }
 
         return calendar;
@@ -44,6 +41,11 @@ public class InventoryRestoreTimeFrame {
 
     public Date getUpperBound() {
         return upperBound;
+    }
+
+    @Override
+    public String toString() {
+        return lowerBound + " - " + upperBound;
     }
 
     public static boolean matches(String arg) {
@@ -61,7 +63,7 @@ public class InventoryRestoreTimeFrame {
 
         public static TimeUnit fromString(String timeUnit) {
             for (TimeUnit unit : values()) {
-                if (unit.name().startsWith(timeUnit))
+                if (unit.name().startsWith(timeUnit.toUpperCase()))
                     return unit;
             }
             return null;

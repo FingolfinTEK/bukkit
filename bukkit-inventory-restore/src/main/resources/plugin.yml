@@ -1,5 +1,5 @@
 name: InventoryRestore
-main: com.github.fingolfintek.bukkit.InventoryRestorePlugin
+main: com.github.fingolfintek.bukkit.invrestore.InventoryRestorePlugin
 version: 1.0
 author: FingolfinTEK
 database: true

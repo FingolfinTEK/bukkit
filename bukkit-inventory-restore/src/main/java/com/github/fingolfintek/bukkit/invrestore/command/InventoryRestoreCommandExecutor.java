@@ -1,6 +1,10 @@
-package com.github.fingolfintek.bukkit;
+package com.github.fingolfintek.bukkit.invrestore.command;
 
 import com.avaje.ebean.EbeanServer;
+import com.github.fingolfintek.bukkit.invrestore.InventoryRestorePlugin;
+import com.github.fingolfintek.bukkit.invrestore.InventorySnapshot;
+import com.github.fingolfintek.bukkit.invrestore.RestoreTimeFrame;
+import com.github.fingolfintek.bukkit.util.PlayerInventoryUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -11,11 +15,11 @@ import java.util.logging.Logger;
 public class InventoryRestoreCommandExecutor implements CommandExecutor {
 
     private final InventoryRestorePlugin inventoryRestorePlugin;
-    private final Logger pluginLogger;
+    private final Logger logger;
 
     public InventoryRestoreCommandExecutor(InventoryRestorePlugin inventoryRestorePlugin) {
         this.inventoryRestorePlugin = inventoryRestorePlugin;
-        this.pluginLogger = inventoryRestorePlugin.getLogger();
+        this.logger = inventoryRestorePlugin.getLogger();
     }
 
     @Override
@@ -27,11 +31,11 @@ public class InventoryRestoreCommandExecutor implements CommandExecutor {
 
             if (player != null) {
                 String timeFrame = args[1];
-                if (InventoryRestoreTimeFrame.matches(timeFrame)) {
+                if (RestoreTimeFrame.matches(timeFrame)) {
                     doRestore(sender, player, timeFrame);
                     returnValue = true;
                 } else {
-                    sendMessageToSender(sender, command.getUsage());
+                    sendMessageToSender(sender, "Not a valid time frame " + timeFrame);
                 }
             } else {
                 sendMessageToSender(sender, "Could not find player with name " + playerName);
@@ -43,18 +47,27 @@ public class InventoryRestoreCommandExecutor implements CommandExecutor {
 
     private void doRestore(CommandSender sender, Player player, String timeFrame) {
         String playerName = player.getName();
-        InventoryRestoreTimeFrame restoreTimeFrame = new InventoryRestoreTimeFrame(timeFrame);
-        PlayerInventorySnapshot snapshot = findInDatabase(playerName, restoreTimeFrame);
-        PlayerInventoryUtil.copyInventoryToPlayer(snapshot.getInventory(), player);
-        sendMessageToSender(sender, "Restored inventory for player " + playerName);
+        RestoreTimeFrame restoreTimeFrame = new RestoreTimeFrame(timeFrame);
+        InventorySnapshot snapshot = findInDatabase(playerName, restoreTimeFrame);
+
+        if (snapshot == null) {
+            sendMessageToSender(sender, "No inventory snapshots found for time frame " + restoreTimeFrame);
+        } else {
+            PlayerInventoryUtil.copyInventoryToPlayer(snapshot.getInventory(), player);
+            sendMessageToSender(sender, "Restored inventory for player " + playerName);
+            player.sendMessage("Restored inventory from snapshot taken on " + snapshot.getSnapshotDate());
+        }
     }
 
-    private PlayerInventorySnapshot findInDatabase(String playerName, InventoryRestoreTimeFrame restoreTimeFrame) {
-        return getDatabase().find(PlayerInventorySnapshot.class)
+    private InventorySnapshot findInDatabase(String playerName, RestoreTimeFrame restoreTimeFrame) {
+        return getDatabase().find(InventorySnapshot.class)
                 .where()
                 .ieq("playerName", playerName)
-                .between("date", restoreTimeFrame.getLowerBound(), restoreTimeFrame.getUpperBound())
-                .findUnique();
+                .between("snapshotDate", restoreTimeFrame.getLowerBound(), restoreTimeFrame.getUpperBound())
+                .orderBy()
+                .asc("id")
+                .findList()
+                .get(0);
     }
 
     private EbeanServer getDatabase() {
@@ -62,13 +75,8 @@ public class InventoryRestoreCommandExecutor implements CommandExecutor {
     }
 
     private void sendMessageToSender(CommandSender sender, String message) {
-        pluginLogger.severe(message);
+        logger.info(message);
         sender.sendMessage(message);
-    }
-
-    private void saveSnapshotForPlayer(Player player) {
-        PlayerInventorySnapshot inventorySnapshot = new PlayerInventorySnapshot(player);
-        getDatabase().save(inventorySnapshot);
     }
 
 }
