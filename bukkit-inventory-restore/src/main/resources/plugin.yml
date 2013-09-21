@@ -1,0 +1,18 @@
+name: InventoryRestore
+main: com.github.fingolfintek.bukkit.InventoryRestorePlugin
+version: 1.0
+author: FingolfinTEK
+database: true
+description: >
+             Periodically saves user inventories
+             Allows the restoration of a user's inventory to a previous state
+commands:
+    invrestore:
+        aliases: [restore]
+        description: Restores your inventory to a snapshot made the given amount of time before the current instant
+        usage: /<command> <player> -t<d|h|m>
+        permission: inventoryrestore.invrestore
+permissions:
+    inventoryrestore.invrestore:
+        description: Allows you to restore a player's inventory
+        default: op
