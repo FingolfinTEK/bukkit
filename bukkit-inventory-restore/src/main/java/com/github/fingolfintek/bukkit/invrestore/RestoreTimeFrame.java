@@ -16,21 +16,24 @@ public class RestoreTimeFrame {
     private final Date upperBound;
 
     public RestoreTimeFrame(String timeFrame) {
-        Calendar calendar = getRequestedTimeFrameLowerBound(timeFrame);
-        lowerBound = calendar.getTime();
-        upperBound = new Date();
+        this(calculateLowerBound(timeFrame).getTime(), new Date());
     }
 
+    public RestoreTimeFrame(Date lowerBound, Date upperBound) {
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+    }
 
-    private Calendar getRequestedTimeFrameLowerBound(String timeFrame) {
-        Calendar calendar = Calendar.getInstance();
-
+    private static Calendar calculateLowerBound(String timeFrame) {
         Matcher matcher = TIME_PATTERN.matcher(timeFrame);
-        if (matcher.matches()) {
-            Integer timeQuantity = Integer.parseInt(matcher.group(RestoreTimeFrame.TIME_QUANTITY_GROUP));
-            String timeUnit = matcher.group(RestoreTimeFrame.TIME_UNIT_GROUP);
-            calendar.add(RestoreTimeFrame.TimeUnit.getCalendarField(timeUnit), -timeQuantity);
-        }
+
+        if (!matcher.matches())
+            throw new IllegalArgumentException("Not a valid time frame " + timeFrame);
+
+        Calendar calendar = Calendar.getInstance();
+        Integer timeQuantity = Integer.parseInt(matcher.group(RestoreTimeFrame.TIME_QUANTITY_GROUP));
+        String timeUnit = matcher.group(RestoreTimeFrame.TIME_UNIT_GROUP);
+        calendar.add(TimeUnit.getCalendarField(timeUnit), -timeQuantity);
 
         return calendar;
     }
@@ -52,25 +55,4 @@ public class RestoreTimeFrame {
         return TIME_PATTERN.matcher(arg).matches();
     }
 
-    private static enum TimeUnit {
-        DAYS(Calendar.DAY_OF_YEAR), HOURS(Calendar.HOUR), MINUTES(Calendar.MINUTE);
-
-        private final int type;
-
-        TimeUnit(int type) {
-            this.type = type;
-        }
-
-        public static TimeUnit fromString(String timeUnit) {
-            for (TimeUnit unit : values()) {
-                if (unit.name().startsWith(timeUnit.toUpperCase()))
-                    return unit;
-            }
-            return null;
-        }
-
-        public static int getCalendarField(String timeUnit) {
-            return TimeUnit.fromString(timeUnit).type;
-        }
-    }
 }
