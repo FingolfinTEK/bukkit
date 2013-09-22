@@ -20,7 +20,7 @@ public class InventoryRestoreCommandExecutor implements CommandExecutor {
     private final InventoryRestorePlugin inventoryRestorePlugin;
 
     public InventoryRestoreCommandExecutor(InventoryRestorePlugin inventoryRestorePlugin) {
-        this.snapshotDao = new InventorySnapshotDao(inventoryRestorePlugin.getDatabase());
+        this.snapshotDao = new InventorySnapshotDao(inventoryRestorePlugin);
         this.inventoryRestorePlugin = inventoryRestorePlugin;
     }
 

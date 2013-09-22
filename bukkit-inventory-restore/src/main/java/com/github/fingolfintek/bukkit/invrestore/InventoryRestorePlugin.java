@@ -2,6 +2,7 @@ package com.github.fingolfintek.bukkit.invrestore;
 
 import com.avaje.ebean.Transaction;
 import com.github.fingolfintek.bukkit.invrestore.command.InventoryRestoreCommandExecutor;
+import com.github.fingolfintek.bukkit.invrestore.dao.InventorySnapshotDao;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -14,6 +15,8 @@ public final class InventoryRestorePlugin extends JavaPlugin {
 
     private static final long SECOND_IN_TICKS = 20;
     private static final long MINUTE_IN_TICKS = 60 * SECOND_IN_TICKS;
+
+    private final InventorySnapshotDao snapshotDao = new InventorySnapshotDao(this);
 
     @Override
     public void onDisable() {
@@ -58,34 +61,8 @@ public final class InventoryRestorePlugin extends JavaPlugin {
     private class SaveSnapshotsTask extends BukkitRunnable {
         @Override
         public void run() {
-            Transaction transaction = getDatabase().beginTransaction();
-            getLogger().info("Saving inventory snapshots for players");
-
-            for (Player player : getServer().getOnlinePlayers()) {
-                saveSnapshotForPlayer(player);
-            }
-
-            transaction.commit();
-            getLogger().info("Finished saving inventory snapshots for players");
-        }
-
-        private void saveSnapshotForPlayer(Player player) {
-            final InventorySnapshot inventorySnapshot = new InventorySnapshot(player);
-            new SaveSnapshotTask(inventorySnapshot).runTaskAsynchronously(InventoryRestorePlugin.this);
-        }
-    }
-
-    private class SaveSnapshotTask extends BukkitRunnable {
-        private final InventorySnapshot inventorySnapshot;
-
-        public SaveSnapshotTask(InventorySnapshot inventorySnapshot) {
-            this.inventorySnapshot = inventorySnapshot;
-        }
-
-        @Override
-        public void run() {
-            getDatabase().save(inventorySnapshot);
-            getLogger().info("Successfully saved inventory snapshot " + inventorySnapshot);
+            Player[] onlinePlayers = getServer().getOnlinePlayers();
+            snapshotDao.saveSnapshotsForAll(onlinePlayers);
         }
     }
 }
