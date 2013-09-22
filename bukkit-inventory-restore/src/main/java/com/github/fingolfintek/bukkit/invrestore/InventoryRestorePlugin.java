@@ -1,6 +1,5 @@
 package com.github.fingolfintek.bukkit.invrestore;
 
-import com.avaje.ebean.Transaction;
 import com.github.fingolfintek.bukkit.invrestore.command.InventoryRestoreCommandExecutor;
 import com.github.fingolfintek.bukkit.invrestore.dao.InventorySnapshotDao;
 import org.bukkit.entity.Player;
@@ -51,18 +50,15 @@ public final class InventoryRestorePlugin extends JavaPlugin {
     }
 
     private void scheduleTasks() {
-        new SaveSnapshotsTask().runTaskTimer(this, MINUTE_IN_TICKS, 5 * MINUTE_IN_TICKS);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                snapshotDao.saveSnapshotsForAll();
+            }
+        }.runTaskTimer(this, MINUTE_IN_TICKS, 5 * MINUTE_IN_TICKS);
     }
 
     private void logPluginEnable() {
         getLogger().info(getDescription().getFullName() + " has been successfully enabled");
-    }
-
-    private class SaveSnapshotsTask extends BukkitRunnable {
-        @Override
-        public void run() {
-            Player[] onlinePlayers = getServer().getOnlinePlayers();
-            snapshotDao.saveSnapshotsForAll(onlinePlayers);
-        }
     }
 }

@@ -16,11 +16,11 @@ public class InventorySnapshotDao {
 
     private final Logger logger = Logger.getLogger(getClass().getName());
     private final EbeanServer database;
-    private final InventoryRestorePlugin inventoryRestorePlugin;
+    private final InventoryRestorePlugin plugin;
 
-    public InventorySnapshotDao(InventoryRestorePlugin inventoryRestorePlugin) {
-        this.database = inventoryRestorePlugin.getDatabase();
-        this.inventoryRestorePlugin = inventoryRestorePlugin;
+    public InventorySnapshotDao(InventoryRestorePlugin plugin) {
+        this.plugin = plugin;
+        this.database = plugin.getDatabase();
     }
 
     public InventorySnapshot findByPlayerNameAndTimeFrame(String playerName, RestoreTimeFrame timeFrame) {
@@ -43,7 +43,8 @@ public class InventorySnapshotDao {
         logger.info("Successfully saved inventory snapshot " + inventorySnapshot);
     }
 
-    public void saveSnapshotsForAll(Player[] onlinePlayers) {
+    public void saveSnapshotsForAll() {
+        Player[] onlinePlayers= plugin.getServer().getOnlinePlayers();
         Transaction transaction = database.beginTransaction();
         logger.info("Saving inventory snapshots for players");
 
@@ -61,7 +62,7 @@ public class InventorySnapshotDao {
             public void run() {
                 save(new InventorySnapshot(player));
             }
-        }.runTaskAsynchronously(inventoryRestorePlugin);
+        }.runTaskAsynchronously(plugin);
     }
 
 }
