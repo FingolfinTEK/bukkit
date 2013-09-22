@@ -37,9 +37,6 @@ public final class InventoryRestorePlugin extends JavaPlugin {
         try {
             int rowCount = getDatabase().find(InventorySnapshot.class).findRowCount();
             getLogger().info("Database contains " + rowCount + " inventory snapshots");
-            for (InventorySnapshot inventorySnapshot : getDatabase().find(InventorySnapshot.class).findList()) {
-                getLogger().info("Snapshot " + inventorySnapshot);
-            }
         } catch (PersistenceException ex) {
             getLogger().info("Installing database for " + getDescription().getName() + " due to first time usage");
             installDDL();

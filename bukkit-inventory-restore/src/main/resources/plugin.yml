@@ -10,9 +10,9 @@ commands:
     invrestore:
         aliases: [restore]
         description: Restores your inventory to a snapshot made the given amount of time before the current instant
-        usage: /<command> <player> -t<d|h|m>
+        usage: /<command> [player] -t<d|h|m>
         permission: inventoryrestore.invrestore
 permissions:
     inventoryrestore.invrestore:
         description: Allows you to restore a player's inventory
-        default: op
+        default: true
