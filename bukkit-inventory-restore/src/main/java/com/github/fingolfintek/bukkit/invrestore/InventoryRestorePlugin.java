@@ -11,17 +11,11 @@ import java.util.List;
 
 public final class InventoryRestorePlugin extends JavaPlugin {
 
+    public static final String RESTORE_COMMAND_NAME = "invrestore";
     private static final long TICS_IN_SECOND = 20;
     private static final long TICS_IN_MINUTE = 60 * TICS_IN_SECOND;
 
     private InventorySnapshotDao snapshotDao;
-
-
-
-    @Override
-    public void onDisable() {
-
-    }
 
     @Override
     public List<Class<?>> getDatabaseClasses() {
@@ -49,7 +43,7 @@ public final class InventoryRestorePlugin extends JavaPlugin {
     }
 
     private void setUpCommands() {
-        getCommand("invrestore").setExecutor(new InventoryRestoreCommandExecutor(this));
+        getCommand(RESTORE_COMMAND_NAME).setExecutor(new InventoryRestoreCommandExecutor(this));
     }
 
     private void scheduleTasks() {
