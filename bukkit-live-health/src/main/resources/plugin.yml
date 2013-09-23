@@ -1,0 +1,15 @@
+name: InventoryRestore
+main: com.github.fingolfintek.bukkit.invrestore.LiveHealthPlugin
+version: 1.0
+author: FingolfinTEK
+description: >
+             Show online users' health status
+commands:
+    livehealth:
+        description: Toggle online users' health status scoreboard
+        usage: /<command>
+        permission: livehealth.toggle
+permissions:
+    livehealth.toggle:
+        description: Allows users to toggle scoreboard
+        default: true
