@@ -16,6 +16,7 @@
         <version.maven.compiler.plugin>2.3.2</version.maven.compiler.plugin>
         <version.maven.dependency.plugin>2.1</version.maven.dependency.plugin>
         <version.maven.jar.plugin>2.4</version.maven.jar.plugin>
+        <version.maven.shade.plugin>2.1</version.maven.shade.plugin>
 
         <version.bukkit>1.6.2-R1.0</version.bukkit>
         <version.kryo>2.16</version.kryo>
@@ -33,6 +34,7 @@
             <dependency>
                 <groupId>org.bukkit</groupId>
                 <artifactId>bukkit</artifactId>
+                <scope>provided</scope>
                 <version>${version.bukkit}</version>
             </dependency>
 
@@ -76,6 +78,20 @@
                             </manifest>
                         </archive>
                     </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${version.maven.shade.plugin}</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
 
                 <plugin>

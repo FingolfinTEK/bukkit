@@ -16,3 +16,6 @@
 *.jar
 *.war
 *.ear
+
+#Maven
+dependency-reduced-pom.xml
