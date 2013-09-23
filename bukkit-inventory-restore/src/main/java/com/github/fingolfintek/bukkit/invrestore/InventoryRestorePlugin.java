@@ -15,7 +15,9 @@ public final class InventoryRestorePlugin extends JavaPlugin {
     private static final long SECOND_IN_TICKS = 20;
     private static final long MINUTE_IN_TICKS = 60 * SECOND_IN_TICKS;
 
-    private final InventorySnapshotDao snapshotDao = new InventorySnapshotDao(this);
+    private InventorySnapshotDao snapshotDao;
+
+
 
     @Override
     public void onDisable() {
@@ -36,6 +38,8 @@ public final class InventoryRestorePlugin extends JavaPlugin {
     }
 
     private void setUpDatabase() {
+        snapshotDao = new InventorySnapshotDao(this);
+
         try {
             int rowCount = getDatabase().find(InventorySnapshot.class).findRowCount();
             getLogger().info("Database contains " + rowCount + " inventory snapshots");

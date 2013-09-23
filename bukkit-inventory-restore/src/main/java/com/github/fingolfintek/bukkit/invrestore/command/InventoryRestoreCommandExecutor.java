@@ -6,6 +6,7 @@ import com.github.fingolfintek.bukkit.invrestore.InventorySnapshot;
 import com.github.fingolfintek.bukkit.invrestore.RestoreTimeFrame;
 import com.github.fingolfintek.bukkit.invrestore.dao.InventorySnapshotDao;
 import com.github.fingolfintek.bukkit.util.PlayerInventoryUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -33,10 +34,10 @@ public class InventoryRestoreCommandExecutor implements CommandExecutor {
                 Player player = determinePlayer(sender, args);
                 String timeFrame = determineTimeFrame(sender, args);
                 restoreInventoryToPlayerUsingTimeFrame(sender, player, timeFrame);
-                sendMessageToSender(sender, "Restored inventory for player " + player.getName());
+                sendMessageToSender(sender, ChatColor.GREEN + "Restored inventory for player " + player.getName());
                 returnValue = true;
             } catch (Exception e) {
-                sendMessageToSender(sender, e.getMessage());
+                sendMessageToSender(sender, ChatColor.RED + e.getMessage());
             }
         }
 
@@ -73,7 +74,7 @@ public class InventoryRestoreCommandExecutor implements CommandExecutor {
             throw new IllegalArgumentException("No inventory snapshots found for time frame " + restoreTimeFrame);
         } else {
             PlayerInventoryUtil.copyInventoryToPlayer(snapshot.getInventory(), player);
-            player.sendMessage("Restored inventory from snapshot taken on " + snapshot.getSnapshotDate());
+            player.sendMessage(ChatColor.GREEN + "Restored inventory from snapshot taken on " + snapshot.getSnapshotDate());
         }
     }
 
