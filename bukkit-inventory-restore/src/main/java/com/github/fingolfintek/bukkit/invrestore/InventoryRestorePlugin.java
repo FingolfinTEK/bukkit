@@ -2,6 +2,7 @@ package com.github.fingolfintek.bukkit.invrestore;
 
 import com.github.fingolfintek.bukkit.invrestore.command.InventoryRestoreCommandExecutor;
 import com.github.fingolfintek.bukkit.invrestore.dao.InventorySnapshotDao;
+import com.github.fingolfintek.bukkit.util.BukkitSchedulerConstants;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -12,8 +13,6 @@ import java.util.List;
 public final class InventoryRestorePlugin extends JavaPlugin {
 
     public static final String RESTORE_COMMAND_NAME = "invrestore";
-    private static final long TICS_IN_SECOND = 20;
-    private static final long TICS_IN_MINUTE = 60 * TICS_IN_SECOND;
 
     private InventorySnapshotDao snapshotDao;
 
@@ -52,7 +51,7 @@ public final class InventoryRestorePlugin extends JavaPlugin {
             public void run() {
                 snapshotDao.saveSnapshotsForAll();
             }
-        }.runTaskTimer(this, TICS_IN_MINUTE, 5 * TICS_IN_MINUTE);
+        }.runTaskTimer(this, BukkitSchedulerConstants.TICS_IN_MINUTE, 5 * BukkitSchedulerConstants.TICS_IN_MINUTE);
     }
 
     private void logPluginEnable() {
